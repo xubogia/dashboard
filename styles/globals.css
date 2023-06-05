@@ -2,26 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+.border-32 {
+  border-width: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.markdown ol {
+  list-style-type: decimal;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.markdown ol ul {
+  margin-left: 10px;
+}
+
+.markdown ul {
+  list-style-type: disc; /* 或者 circle、square */
+}
+
+.markdown ul ul {
+  margin-left: 10px;
+  list-style-type: circle;
+}
+
+.markdown table tr th, table tr td {
+  border: 1px solid black;
+}
+
+
+.markdown blockquote {
+  border-left: 3px solid gray;
+  margin: 10px;
+  padding-left: 10px;
+}
+.markdown a{
+  color: blue;
+}
+
+.markdown h1 {
+  font-size: 2.5rem; /* 调整为你想要的字体大小 */
+}
+
+.markdown h2 {
+  font-size: 2rem; /* 调整为你想要的字体大小 */
+}
+
+.markdown h3 {
+  font-size: 1.75rem; /* 调整为你想要的字体大小 */
+}
+
+.markdown h4 {
+  font-size: 1.5rem; /* 调整为你想要的字体大小 */
+}
+
+.markdown h5 {
+  font-size: 1.25rem; /* 调整为你想要的字体大小 */
+}
+
+.markdown h6 {
+  font-size: 1rem; /* 调整为你想要的字体大小 */
+}
+
+html,
+body,
+#__next {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
 }
