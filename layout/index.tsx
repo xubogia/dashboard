@@ -1,23 +1,19 @@
 import {FC, ReactNode} from 'react';
-import Main from './main'
-import Nav from '../components/nav'
+import Main from './maintemp'
+import Nav from '../components/nav/temp'
 interface Props {
-  flat?: boolean;
-  left?: ReactNode;
-  right?: ReactNode;
-  reverse?: boolean;
-  showNav?: boolean;
-  isPrivate: boolean;
+  right?: any;
+  currentPage:string;
 }
 
-const Index: FC<Props> = ({showNav = false, right}) => {
+const Index: FC<Props> = ({right,currentPage}) => {
 
 
   return (
 
     <div className={'flex flex-row h-screen'}>
-      <Nav/>
-      <Main right={right}/>
+      <Nav currentPage={currentPage}/>
+      <Main Right={right}/>
     </div>
   );
 };

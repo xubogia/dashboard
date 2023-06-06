@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import mocker from '../../utils/mocker';
 
 interface Order{
-  ID:number;
+  id:number;
   state:string;
   amount:number;
   name:number;

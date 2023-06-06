@@ -4,7 +4,7 @@ import { getImage } from './image';
 interface Product {
   image:string;
   title: string;
-  ID: number;
+  id: number;
   category: string;
   amount: string;
   status: string;
@@ -22,7 +22,7 @@ export function getProducts(number=faker.number.int({ min: 10, max: 30 })){
     const product:Product={
       image: getImage(100,100),
       title: faker.lorem.words(),
-      ID: faker.number.int({min:1,max:999}),
+      id: faker.number.int({min:1,max:999}),
       category: faker.lorem.words(1),
       amount: parseFloat(faker.finance.amount()).toFixed(2),
       status: getRandomElement(statusArr),

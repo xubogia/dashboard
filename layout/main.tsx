@@ -1,21 +1,20 @@
-import {FC, ReactNode} from 'react';
-
+import { FC, ReactNode, useEffect, useState } from 'react';
+import Header from '@/components/header';
 interface Props {
-  flat?: boolean;
-  right?: ReactNode;
-  reverse?: boolean;
-  showNav?: boolean;
-  isPrivate: boolean;
+  Right?: any;
+
 }
 
-const Index: FC<Props> = ({  right}) => {
+const Index: FC<Props> = ({Right}) => {
+  const [searchText,setSearchText]=useState('');
 
-
+  useEffect(()=>{
+    console.log(searchText)
+  },[searchText]);
   return (
-
     <div className={'flex-grow flex flex-col'}>
-      <div className={'h-8'}>{'欢迎'}</div>
-      {right}
+      <Header setSearchText={setSearchText}/>
+      <Right searchText={searchText} />
     </div>
   );
 };

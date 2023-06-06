@@ -4,7 +4,7 @@ import mocker from '../../utils/mocker'
 interface Product {
   image:string;
   title: string;
-  code: number;
+  id: number;
   category: string;
   price:number;
   status: string;
