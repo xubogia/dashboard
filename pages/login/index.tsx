@@ -1,4 +1,4 @@
-import { GetServerSideProps, NextPage } from 'next';
+import { NextPage } from 'next';
 import LoginForm from '@/components/loginForm';
 const Home: NextPage = () => {
   return <LoginForm/>

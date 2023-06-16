@@ -1,29 +1,20 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { useState, useEffect } from 'react';
+import { useState, FC } from 'react';
 import Image from 'next/image';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 
-const Index = ({ open, productData, handleClose }) => {
-  const [images, setImages] = useState(productData);
+interface Prop{
+  open:boolean;
+  images:[];
+  handleClose:()=>void;
+}
+const Index:FC<Prop> = ({ open, images, handleClose }) => {
   const [imageTemp, setImageTemp] = useState(0);
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setImages((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
 
-  useEffect(()=>{
-    console.log(productData)
-  },[])
+
   const handleClickAway = () => {
     if (open) {
       handleClose();

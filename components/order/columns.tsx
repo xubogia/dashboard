@@ -1,4 +1,4 @@
-import { GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
+import { GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import { useState } from 'react';
 import Image from 'next/image';
 import ImageDialog from '@/components/Dialog/imageDialog';
@@ -33,7 +33,7 @@ const ImageCell = (params: GridRenderCellParams<any, any, any>) => {
           <Image src={params.value[0] as string} alt='放大的图片' width={400} height={400} />
         </div>
       )}
-      {previewImage && <ImageDialog open={open} productData={params.value} handleClose={handleClose} />}
+      {previewImage && <ImageDialog open={previewImage} images={params.value} handleClose={handleClose} />}
     </div>
   );
 };
