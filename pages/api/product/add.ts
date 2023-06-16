@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+// @ts-ignore
 import formidable from 'formidable';
 import fs from 'fs';
 import mysql from 'mysql2';
@@ -24,7 +25,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     form.multiples = true;
 
 
-    form.parse(req, async (err, fields, files) => {
+    form.parse(req, async (err:any, fields:any, files:any) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: 'File upload failed' });
@@ -46,7 +47,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       console.log(uploadedFiles.length);
 
       try {
-        let count=0
         for (const file of uploadedFiles) {
           const filePath = file.filepath;
           const fileName = file.originalFilename;
@@ -98,7 +98,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 function renameFile(oldPath: string, newPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    fs.renameSync(oldPath, newPath);
+    try {
+      fs.renameSync(oldPath, newPath);
+    }catch (err){
+      reject()
+    }
+    resolve();
   });
 }
 

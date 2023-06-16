@@ -1,8 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import mysql from 'mysql2';
+// @ts-ignore
 import formidable from 'formidable';
 import fs from 'fs';
-import product from '@/components/product';
+import { Simulate } from 'react-dom/test-utils';
+import error = Simulate.error;
 
 const dbConnection = mysql.createPool({
   connectionLimit: 10,
@@ -42,7 +44,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
     let id:number;
     let newProduct:Product;
-    form.parse(req, async (err, fields:NewProduct, files) => {
+    form.parse(req, async (err:ErrorEvent, fields:NewProduct, files:File[]) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: 'File upload failed' });
@@ -105,7 +107,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         'UPDATE products SET `image` = ?, `title` = ?, `category` = ?, `amount` = ?, `status` = ? WHERE id = ?',
         [ JSON.stringify(newProduct.image), newProduct.title, newProduct.category, newProduct.amount, newProduct.status, id],
         (error, results) => {
-          // ...
+          res.status(500).json({error:error,result:results})
         }
       );
 
@@ -121,6 +123,13 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 function renameFile(oldPath: string, newPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    fs.renameSync(oldPath, newPath);
+
+    try {
+      fs.renameSync(oldPath, newPath);
+    }catch (error:any){
+      reject();
+    }
+
+    resolve();
   });
 }

@@ -37,7 +37,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
         if (error) {
           console.error('Error deleting products:', error);
-          return res.status(500).json({ error: 'Error deleting products' });
+          return res.status(500).json({ error: 'Error deleting products',results:results});
         }
 
         res.status(200).json({ message: 'Products deleted successfully' });

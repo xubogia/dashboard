@@ -1,5 +1,5 @@
 import { Menu, Transition } from '@headlessui/react';
-import { FC, Fragment, ReactNode, useState } from 'react';
+import { FC, Fragment, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 interface Props {

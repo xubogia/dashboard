@@ -6,15 +6,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useState, useEffect, FC } from 'react';
-import Image from 'next/image';
 import UploadImage from '@/components/Dialog/uploadImage';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import axios from 'axios';
-import { Simulate } from 'react-dom/test-utils';
-import error = Simulate.error;
 import useStore from '@/date/store';
 
 interface Product {
@@ -50,7 +47,7 @@ interface Pros{
 const FormDialog :FC<Pros>= ({ open, productData, handleClose }) => {
   const initialProductData: newProduct = {...productData,newImage:[]}
   const [updatedProductData, setUpdatedProductData] = useState<newProduct>(initialProductData);
-  const [images, setImages] = useState(productData.image);
+  const images = productData.image;
   const [imageTemp,setImageTemp]=useState(0);
   // @ts-ignore
   const setIsProductsChanged = useStore((state) => state.setIsProductsChanged);
@@ -71,22 +68,8 @@ const FormDialog :FC<Pros>= ({ open, productData, handleClose }) => {
     }));
   };
 
-  const handlePreOne = () => {
-    if(imageTemp!==0){
-      let pre=imageTemp-1;
-      setImageTemp(pre);
-      console.log(imageTemp)
 
-    }
 
-  };
-  const handleNextOne=()=>{
-    if(imageTemp<images.length-1){
-      let next=imageTemp+1;
-      setImageTemp(next);
-      console.log(imageTemp)
-    }
-  }
 
 
   const handleSave = () => {

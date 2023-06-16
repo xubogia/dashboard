@@ -2,19 +2,17 @@ import * as React from 'react';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
+import ListItemText from '@mui/material/ListItemText'
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useRouter } from 'next/router';
 import { Logout } from '@mui/icons-material';
 import LogoutDialog from '../Dialog/logoutDialog'
-import { useState } from 'react';
+import { FC, useState } from 'react';
 
 // import
-export default function SelectedListItem({currentPage}) {
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+const Index:FC<{currentPage:string}>=({currentPage})=>{
   const router = useRouter();
   const [open,setOpen]=useState(false);
 
@@ -37,7 +35,7 @@ export default function SelectedListItem({currentPage}) {
 
           <ListItemButton
             selected={currentPage === '商品'}
-            onClick={(event) => handleListItemClick('/')}
+            onClick={() => handleListItemClick('/')}
           >
             <ListItemIcon>
               <InboxIcon />
@@ -46,7 +44,7 @@ export default function SelectedListItem({currentPage}) {
           </ListItemButton>
           <ListItemButton
             selected={currentPage === '订单'}
-            onClick={(event) => handleListItemClick('/order')}
+            onClick={() => handleListItemClick('/order')}
           >
             <ListItemIcon>
               <DraftsIcon />
@@ -60,8 +58,8 @@ export default function SelectedListItem({currentPage}) {
       <div className={''}>
         <List component="nav" aria-label="secondary mailbox folder">
           <ListItemButton
-            selected={selectedIndex === 2}
-            onClick={(event) => handleListItemClick('/setting')}
+            selected={currentPage === '设置'}
+            onClick={() => handleListItemClick('/setting')}
           >
             <ListItemIcon>
               <SettingsIcon />
@@ -69,7 +67,7 @@ export default function SelectedListItem({currentPage}) {
             <ListItemText primary="设置" />
           </ListItemButton>
           <ListItemButton
-            onClick={(event) => setOpen(true)}
+            onClick={() => setOpen(true)}
           >
             <ListItemIcon>
               <Logout />
@@ -83,3 +81,4 @@ export default function SelectedListItem({currentPage}) {
     </div>
   );
 }
+export default Index;

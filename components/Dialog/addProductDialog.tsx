@@ -128,7 +128,7 @@
                 value={productData.category}
                 onChange={handleChange}
               >
-                {categoryArr.map((category)=><MenuItem value={category}>{category}</MenuItem>)}
+                {categoryArr.map((category,index)=><MenuItem key={index} value={category}>{category}</MenuItem>)}
 
               </Select>
             </FormControl>

@@ -1,5 +1,7 @@
+// @ts-ignore
 import bcrypt from 'bcrypt';
 import mysql from 'mysql2';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const dbConnection = mysql.createPool({
   connectionLimit: 10,
@@ -9,7 +11,7 @@ const dbConnection = mysql.createPool({
   database: 'huihe',
 });
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     const { username, password } = req.body;
 
@@ -20,7 +22,7 @@ export default async function handler(req, res) {
 
       // 检查用户名是否已存在
       const checkUsernameQuery = 'SELECT * FROM user WHERE username = ?';
-      dbConnection.query(checkUsernameQuery, [username], (err, results) => {
+      dbConnection.query(checkUsernameQuery, [username], (err, results:mysql.RowDataPacket[]) => {
         if (err) {
           console.error('查询用户名时出现错误', err);
           res.status(500).json({ message: '注册失败' });
@@ -35,7 +37,7 @@ export default async function handler(req, res) {
             dbConnection.query(insertQuery, values, (err, results) => {
               if (err) {
                 console.error('插入数据时出现错误', err);
-                res.status(500).json({ message: '注册失败' });
+                res.status(500).json({ message: '注册失败',results:results });
               } else {
                 console.log('用户数据插入成功');
                 res.status(200).json({ message: '注册成功' });

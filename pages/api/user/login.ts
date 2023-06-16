@@ -1,7 +1,9 @@
 // 导入所需的依赖和模块
 import { NextApiRequest, NextApiResponse } from 'next';
+// @ts-ignore
 import jwt from 'jsonwebtoken';
 import mysql from 'mysql2';
+// @ts-ignore
 import bcrypt from 'bcrypt';
 // 密钥用于签发和验证JWT令牌
 const secretKey = '8818637';
@@ -21,7 +23,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       // 查询数据库以获取用户记录
       const sql = `SELECT * FROM user WHERE username = ?`;
       const values = [username];
-      dbConnection.query(sql, values, async (err, results) => {
+      dbConnection.query(sql, values, async (err, results:mysql.RowDataPacket[]) => {
         if (err) {
           console.error('查询数据时出现错误', err);
           res.status(500).json({ message: '登录失败' });
@@ -67,7 +69,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         // 验证令牌的有效性
         console.log('now',token);
         const decodedToken = jwt.verify(token, secretKey);
-
+        console.log(decodedToken);
         // 在此处进行其他验证逻辑
         // 假设验证成功
 

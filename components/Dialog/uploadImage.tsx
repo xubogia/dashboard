@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 
 interface NewProduct {
   image:string[];
@@ -10,7 +9,6 @@ interface Props {
  name:string;
  value:NewProduct;
  onChange:(prop:string,images:any[])=>void;
-  // handleSave: (product: Product) => void;
 }
 
 const ImageUploader:FC<Props> = ({name,value, onChange}) => {
@@ -18,10 +16,6 @@ const ImageUploader:FC<Props> = ({name,value, onChange}) => {
   const [imageFiles,setImageFiles]=useState<File[]>([])
   const [imageDetail, setImageDetail] = useState<string[]>(value.imageDetail);
 
-  useEffect(()=>{
-    console.log('value',value);
-    console.log('setImageFiles',selectedImages)
-  },[value])
   const handleImageUpload = (event:any) => {
     const files = event.target.files;
     console.log('files',files)
