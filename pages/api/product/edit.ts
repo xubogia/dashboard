@@ -3,7 +3,6 @@ import mysql from 'mysql2';
 // @ts-ignore
 import formidable from 'formidable';
 import fs from 'fs';
-import { Simulate } from 'react-dom/test-utils';
 
 const dbConnection = mysql.createPool({
   connectionLimit: 10,
