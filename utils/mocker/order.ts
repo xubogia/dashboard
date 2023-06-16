@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { getImage } from '@/utils/mocker/image';
 
 interface Order {
-  image:string
+  image:string[]
   id: number;
   state: string;
   amount: number;
@@ -24,8 +24,12 @@ export function getOrders(number = faker.number.int({ min: 10, max: 30 })): Orde
   const orders: Order[] = [];
 
   for (let i = 0; i < number; i++) {
+    let images=[];
+    for (let j = 0; j < 5; j++) {
+      images.push(getImage(100,100));
+    }
     const order: Order = {
-      image: getImage(100,100),
+      image: images,
       id: faker.number.int({max:999}),
       state: getRandomElement(stateArr),
       amount: faker.number.int({max:9999}),

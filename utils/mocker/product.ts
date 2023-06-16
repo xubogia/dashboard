@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { getImage } from './image';
 
 interface Product {
-  image:string;
+  image:string[];
   title: string;
   id: number;
   category: string;
@@ -15,12 +15,17 @@ function getRandomElement(array: any[]) {
   return array[randomIndex];
 }
 
-export function getProducts(number=faker.number.int({ min: 10, max: 30 })){
+export function getProducts(number:number){
   let products=[]
 
   for (let i = 0; i < number; i++) {
+    let images=[];
+    for (let j = 0; j < 5; j++) {
+      let imageTemp=getImage(100,100);
+      images.push(imageTemp);
+    }
     const product:Product={
-      image: getImage(100,100),
+      image: images,
       title: faker.lorem.words(),
       id: faker.number.int({min:1,max:999}),
       category: faker.lorem.words(1),

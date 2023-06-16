@@ -1,122 +1,121 @@
-import { FC } from 'react';
-// import { useForm } from 'react-hook-form';
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import { yupResolver } from '@hookform/resolvers/yup';
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import * as yup from 'yup';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import HuiHe from '../../asset/image/huihe.jpg'
+import Image from 'next/image';
+const Index = () => {
+  // 获取路由实例
+  const router = useRouter();
 
-interface LoginFormInputs {
-  email: String;
-  password: String;
-}
-// interface Respon {
-//   code: Number;
-// }
+  // 处理登录表单提交事件
+  const handleLoginFormSubmit = async (event:any) => {
+    event.preventDefault();
 
-// const inputWrong = yup.object({
-//   email: yup
-//     .string()
-//     .trim()
-//     .email('Please enter a valid email address.')
-//     .required('Email is required'),
-//   password: yup
-//     .string()
-//     .required('Password is required.')
-//     .min(6, '6 charts min')
-//     .max(20, '20 chars limit')
-//     .matches(/^[a-zA-Z0-9]{6, 20}$/, 'Password format error'),
-// });
+    // 获取表单数据
+    const { username, password } = event.target.elements;
 
-// const loginResult = yup
-//   .object({
-//     password: yup.string().test('psw', 'Password is wrong', (object) => {
-//       if (object && object.length >= 8) {
-//         return true;
-//       }
-//       return false;
-//     }),
-//   })
-//   .required();
+    try {
+      const response = await axios.post('http://172.29.36.254:3000/api/user/login', {
+        username: username.value,
+        password: password.value,
+      });
 
-const Index: FC = () => {
-  // const {
-  //   handleSubmit,
-  //   formState: { errors },
-  // } = useForm<LoginFormInputs>({
-  //   resolver: yupResolver(inputWrong),
-  //   defaultValues: { email: '', password: '' },
-  // });
-  // const onSubmit = (data: LoginFormInputs) => {
-  //   console.log(`${data.email}+${data.password}`);
-  // };
+      if (response.status === 200) {
+        // 登录成功，获取令牌
+        const { token } = response.data;
 
-  // const { state, setState } = useState(false);
+        // 将令牌保存在本地（Cookie 或本地存储）
+        document.cookie = `token=${token}; path=/`; // 保存令牌到 Cookie，设置有效路径
+        // 或者使用本地存储
+        // localStorage.setItem('token', token);
 
-  // function handleLoginResult(data: Respon) {
-  //   if (data.code !== 1) {
-  //     yupResolver(loginResult);
-  //   }
-  // }
+        // 重定向由服务器端逻辑处理
+        router.push('/');
+        // 不在前端进行重定向
+      } else {
+        // 登录失败，显示错误提示
+        console.error('Login failed');
+      }
+    } catch (error) {
+      console.error('An error occurred', error);
+    }
+  };
 
   return (
-    <div className="h-full  flex items-center justify-center flex-col text-center">
-      <div className="text-green-900 w-96  ">
-        <p className="text-2xl font-semibold">Unititled UI</p>
+    <>
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+          <Image
+            className="mx-auto "
+            width={160}
+            height={160}
+            src={HuiHe}
+            alt="Your Company"
+          />
+        </div>
+
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+          <form className="space-y-6" action="#"  onSubmit={handleLoginFormSubmit}>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                账号
+              </label>
+              <div className="mt-2">
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  autoComplete="username"
+                  required
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                  密码
+                </label>
+                <div className="text-sm">
+                  <a href="#" className="font-semibold text-red-600 hover:text-indigo-500">
+                    忘记密码？
+                  </a>
+                </div>
+              </div>
+              <div className="mt-2">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div>
+              <button
+                type="submit"
+                className="flex w-full justify-center rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                登录
+              </button>
+            </div>
+          </form>
+
+          <p className="mt-10 text-center text-sm text-gray-500">
+            Not a member?{' '}
+            <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+              Start a 14 day free trial
+            </a>
+          </p>
+        </div>
       </div>
+    </>
+  )
+}
 
-      <div className="mt-20 mb-10">
-        <p className=" text-4xl text-green-900 font-medium">Welcome back</p>
-        <p className="  text-blue-900 font-semibold">Please enter your details</p>
-      </div>
 
-      {/*<form className="text-justify w-96" onSubmit={handleSubmit(onSubmit)}>*/}
-      {/*  <div className="">*/}
-      {/*    <p className="text-blue-900 font-semibold">Email</p>*/}
-      {/*    <input*/}
-      {/*      type="text"*/}
-      {/*      className="w-96 h-10 rounded-lg pl-2 border-2 border-green-900 border-opacity-25"*/}
-      {/*      placeholder="Enter your mail"*/}
-      {/*    />*/}
-      {/*    <p className="w-96 h-5   text-sm text-red-400 font-semibold">{errors.email?.message}</p>*/}
-
-      {/*    <p className=" text-blue-900 font-semibold">Password</p>*/}
-      {/*    <input*/}
-      {/*      type="password"*/}
-      {/*      className="w-96 h-10 rounded-lg pl-2 border-2 border-green-900 border-opacity-25"*/}
-      {/*      placeholder="Enter your password"*/}
-      {/*    />*/}
-      {/*    <p className="w-96 h-5 text-sm text-red-400 font-semibold">{errors.password?.message}</p>*/}
-      {/*  </div>*/}
-
-      {/*  <div className="w-full mt-5  ">*/}
-      {/*    <div className=" float-left ">*/}
-      {/*      <input type="radio" className="float-left w-4 h-4 rounded-xl" />*/}
-      {/*      <p className="text-xs float-left text-blue-900 font-semibold">*/}
-      {/*        Remember me for 30 days*/}
-      {/*      </p>*/}
-      {/*    </div>*/}
-
-      {/*    <div className="float-right  text-xs  text-green-700 font-semibold">*/}
-      {/*      <a>Forgot password</a>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-
-      {/*  <br />*/}
-      {/*  <div className=" text-center my-5 w-96 h-10 bg-green-800 rounded-lg">*/}
-      {/*    <button type="submit">*/}
-      {/*      <p className="text-white text-1xl my-2">Sign in</p>*/}
-      {/*    </button>*/}
-      {/*  </div>*/}
-
-      {/*  <div className="w-full flex flex-row justify-center">*/}
-      {/*    <div className="text-sm text-blue-900"> Don&#39;t have an account?</div>*/}
-      {/*    <div className=" ml-1 text-sm text-green-700">*/}
-      {/*      <a>Sign up</a>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*</form>*/}
-    </div>
-  );
-};
 
 export default Index;
