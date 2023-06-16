@@ -34,14 +34,14 @@ const Index: FC<Props> = (props) => {
           <Menu.Items
             className='absolute z-20 left-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
             <div className='px-1 py-1 '>
-              {props.items.map((item, index) => (
-                <Menu.Item key={index}>
+              {props.items.map((item) => (
+                <Menu.Item>
                   {({ active }) => (
                     <button
                       className={`${
                         active ? 'bg-gray-100 ' : selectedItem === item.text ? 'bg-gray-200' : ''
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-
+                      type='button'
                       onClick={() => {
                         item.fc();
                         setSelectedItem(item.text);

@@ -1,24 +1,21 @@
 import {FC} from 'react';
-import Main from './maintemp'
-import Nav from '../components/nav'
 import { GetServerSideProps } from 'next';
 import axios from 'axios';
+import Main from './main'
+import Nav from '../components/nav'
+
 interface Props {
   right?: any;
   currentPage:string;
 }
 
-const Index: FC<Props> = ({right,currentPage}) => {
+const Index: FC<Props> = ({right,currentPage}) => (
 
-
-  return (
-
-    <div className={'flex flex-row h-screen'}>
+    <div className="flex flex-row h-screen">
       <Nav currentPage={currentPage}/>
       <Main Right={right}/>
     </div>
   );
-};
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // 在这里进行登录验证的逻辑判断
@@ -26,7 +23,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     // 从请求的 Cookie 中获取令牌
-    const token = context.req.cookies.token;
+    const {token} = context.req.cookies;
     console.log(token);
     // 发送登录验证请求到服务器，并在请求头中包含令牌
     const response = await axios.get('http://localhost:3000/api/login', {

@@ -1,7 +1,7 @@
 import { GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import { useState } from 'react';
 import Image from 'next/image';
-import ImageDialog from '@/components/Dialog/imageDialog';
+import ImageDialog from '../Dialog/imageDialog';
 
 const ImageCell = (params: GridRenderCellParams<any, any, any>) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -26,10 +26,11 @@ const ImageCell = (params: GridRenderCellParams<any, any, any>) => {
   };
 
   return (
-    <div className={'relative'} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleOpen}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleOpen}>
       <Image src={params.value[0] as string} alt='商品图片' width={40} height={40} />
       {isHovered && (
-        <div className={'fixed top-20 left-80 '}>
+        <div className="fixed top-20 left-80 ">
           <Image src={params.value[0] as string} alt='放大的图片' width={400} height={400} />
         </div>
       )}

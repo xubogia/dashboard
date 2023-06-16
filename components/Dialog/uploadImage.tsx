@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import  { FC, useState } from 'react';
 import Button from '@mui/material/Button';
 import Image from 'next/image';
 
@@ -7,7 +7,6 @@ interface NewProduct {
   imageDetail:string[];
 }
 interface Props {
- name:string;
  value:NewProduct;
  onChange:(prop:string,images:any[])=>void;
 }
@@ -18,7 +17,7 @@ const ImageUploader:FC<Props> = ({value, onChange}) => {
   const [imageDetail, setImageDetail] = useState<string[]>(value.imageDetail);
 
   const handleImageUpload = (event:any) => {
-    const files = event.target.files;
+    const {files} = event.target;
     console.log('files',files)
     const uploadedImageFiles = [...imageFiles, ...files];
     console.log('uploadedImageFiles',uploadedImageFiles);
@@ -60,18 +59,18 @@ const ImageUploader:FC<Props> = ({value, onChange}) => {
 
 
   return (
-    <div className={'my-2'}>
-      <div className={'grid grid-cols-3 space-x-2'}>
+    <div className="my-2">
+      <div className="grid grid-cols-3 space-x-2">
         {
           selectedImages.length !== 0 &&
           selectedImages.map((image, index) => (
-            <div key={index} className="flex flex-col mb-4 space-y-2  justify-center items-center ">
-              <div className={'flex flex-row justify-between px-4 space-x-4'}>
+            <div  className="flex flex-col mb-4 space-y-2  justify-center items-center ">
+              <div className="flex flex-row justify-between px-4 space-x-4">
                 <input
                   type="text"
-                  placeholder={'颜色'}
-                  className={'border w-full'}
-                  required={true}
+                  placeholder="颜色"
+                  className="border w-full"
+                  required
                   value={
                   imageDetail[index] ||
                     ''}
@@ -84,6 +83,7 @@ const ImageUploader:FC<Props> = ({value, onChange}) => {
                 />
                 <button
                   className='w-2  rounded-lg '
+                  type='button'
                   onClick={() => handleRemoveImage(index)}
                 >
                   x
@@ -95,19 +95,21 @@ const ImageUploader:FC<Props> = ({value, onChange}) => {
         }
       </div>
 
-      <input
-        accept="image/*"
-        className="hidden"
-        id="image-upload"
-        type="file"
-        multiple
-        onChange={handleImageUpload}
-      />
       <label htmlFor="image-upload">
         <Button variant="contained" component="span">
           选择图片
         </Button>
+        <input
+          accept="image/*"
+          className="hidden"
+          id="image-upload"
+          type="file"
+          multiple
+          onChange={handleImageUpload}
+        />
       </label>
+
+
     </div>
   );
 };

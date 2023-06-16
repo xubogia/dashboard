@@ -1,4 +1,3 @@
-import * as React from 'react';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -8,8 +7,8 @@ import DraftsIcon from '@mui/icons-material/Drafts';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useRouter } from 'next/router';
 import { Logout } from '@mui/icons-material';
-import LogoutDialog from '../Dialog/logoutDialog'
 import { FC, useState } from 'react';
+import LogoutDialog from '../Dialog/logoutDialog'
 
 // import
 const Index:FC<{currentPage:string}>=({currentPage})=>{
@@ -25,11 +24,11 @@ const Index:FC<{currentPage:string}>=({currentPage})=>{
   const handleListItemClick = (
     toPage:string
   ) => {
-    router.push(toPage);
+    router.push(toPage).then();
   };
 
   return (
-    <div className={'h-screen flex  flex-col justify-between py-6'} style={{width:250}}>
+    <div className="h-screen flex  flex-col justify-between py-6" style={{width:250}}>
       <div>
         <List component="nav" aria-label="main mailbox folders">
 
@@ -55,7 +54,7 @@ const Index:FC<{currentPage:string}>=({currentPage})=>{
       </div>
 
       {open&&<LogoutDialog open={open} handleClose={handleClose} />}
-      <div className={''}>
+      <div className="">
         <List component="nav" aria-label="secondary mailbox folder">
           <ListItemButton
             selected={currentPage === '设置'}

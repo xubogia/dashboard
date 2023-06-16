@@ -27,8 +27,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         if (err) {
           console.error('查询数据时出现错误', err);
           res.status(500).json({ message: '登录失败' });
-        } else {
-          if (results.length > 0) {
+        } else if (results.length > 0) {
             // 找到匹配的用户记录
             const user = results[0];
 
@@ -52,7 +51,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             console.log('用户不存在');
             res.status(404).json({ message: '用户不存在' });
           }
-        }
       });
     } catch (error) {
       // 处理错误情况

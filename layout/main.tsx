@@ -1,5 +1,6 @@
-import { FC, ReactNode, useEffect, useState } from 'react';
-import Header from '@/components/header';
+import { FC, useEffect, useState } from 'react';
+import Header from '../components/header';
+
 interface Props {
   Right?: any;
 
@@ -12,7 +13,7 @@ const Index: FC<Props> = ({Right}) => {
     console.log(searchText)
   },[searchText]);
   return (
-    <div className={'flex-grow flex flex-col'}>
+    <div className="flex-grow flex flex-col">
       <Header setSearchText={setSearchText}/>
       <Right searchText={searchText} />
     </div>

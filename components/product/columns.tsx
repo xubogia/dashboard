@@ -1,10 +1,10 @@
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 import Dialog from '../Dialog/updataProductDialog';
 import ImageDialog from '../Dialog/imageDialog';
-import axios from 'axios';
-import useStore from '@/date/store';
+import useStore from '../../date/store';
 
 const ImageCell = (params: GridRenderCellParams<any, any, any>) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -29,10 +29,11 @@ const ImageCell = (params: GridRenderCellParams<any, any, any>) => {
   };
 
   return (
-    <div className={'relative'} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleOpen}>
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleOpen}>
       <Image src={params.value[0] as string} alt='商品图片' width={40} height={40} />
       {isHovered && (
-        <div className={'fixed top-20 left-80 '}>
+        <div className="fixed top-20 left-80 ">
           <Image src={params.value[0] as string} alt='放大的图片' width={400} height={400} />
         </div>
       )}
@@ -56,9 +57,9 @@ const OperatorCell = (params: GridRenderCellParams<any, any, any>) => {
     // setProductData(params.row);
   };
   const handleProductDelete = () => {
-    let ids = [];
+    const ids = [];
     ids.push(params.id);
-    axios.post('/api/product/delete', { ids: ids })
+    axios.post('/api/product/delete', { ids })
       .then(response => {
         setIsProductsChanged(true);
         console.log(response.data.message); // 输出删除成功的消息
@@ -74,7 +75,7 @@ const OperatorCell = (params: GridRenderCellParams<any, any, any>) => {
     setOpen(false);
   };
   return (
-    <div className={'flex flex-row '}>
+    <div className="flex flex-row ">
         <span className='hidden sm:block'>
         <button type='button'
                 onClick={handleEditClick}

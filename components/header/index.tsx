@@ -2,14 +2,13 @@ import { FC } from 'react';
 import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment } from '@mui/material';
+
 interface Props {
   setSearchText: (text: string) => void;
 }
-const Index: FC<Props> =({setSearchText})=>{
-
-  return(
+const Index: FC<Props> =({setSearchText})=>(
     <div className='w-full items-center flex flex-row space-x-8 justify-between px-10  py-2 shadow'>
-      <div className={'w-96'}>
+      <div className="w-96">
         <TextField
           onChange={(event)=>setSearchText(event.target.value)}
           placeholder="搜索"
@@ -31,5 +30,4 @@ const Index: FC<Props> =({setSearchText})=>{
 
     </div>
   )
-}
 export default Index;

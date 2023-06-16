@@ -1,15 +1,11 @@
 import { GetServerSideProps, NextPage } from 'next';
-import Layout from '../layout';
-import Right from '@/components/product';
 import axios from 'axios';
-const Home: NextPage = () =>{
+import Layout from '../layout';
+import Right from '../components/product';
 
-
-
-  return(
-    <Layout  right={Right} currentPage={'商品'} />
-  )
-}
+const Home: NextPage = () => (
+    <Layout right={Right} currentPage="商品" />
+  );
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // 在这里进行登录验证的逻辑判断
@@ -17,7 +13,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     // 从请求的 Cookie 中获取令牌
-    const token = context.req.cookies.token;
+    const {token} = context.req.cookies;
     console.log(token);
     // 发送登录验证请求到服务器，并在请求头中包含令牌
     const response = await axios.get('http://172.29.36.254:3000/api/user/login', {
@@ -28,7 +24,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     // 假设登录验证成功的响应中包含一个名为 "isLoggedIn" 的字段来表示用户是否已登录
     isLoggedIn = response.data.isLoggedIn;
-    console.log('isLoggedIn',isLoggedIn)
+    console.log('isLoggedIn', isLoggedIn);
   } catch (error) {
     console.error('An error occurred during login verification', error);
   }

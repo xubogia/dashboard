@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -20,14 +19,14 @@ const Index:FC<Pros>=( {open,handleClose})=>{
 
     // 执行其他必要的操作，如重定向到登录页面或清除用户相关的本地存储数据
     // 重定向到登录页面
-    router.push('/login');
+    router.push('/login').then();
 
   };
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <div className={'w-96 '}>
+        <div className="w-96 ">
           <DialogContent>
             <DialogContentText margin='dense'>
               确定要退出当前用户吗？

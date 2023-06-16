@@ -1,110 +1,128 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-// @ts-ignore
-import formidable from 'formidable';
-import fs from 'fs';
-import mysql from 'mysql2';
+  import { NextApiRequest, NextApiResponse } from 'next';
+  // @ts-ignore
+  import formidable from 'formidable';
+  import fs from 'fs';
+  import mysql from 'mysql2';
 
 
-const dbConnection = mysql.createPool({
-  connectionLimit: 10,
-  host: 'localhost',
-  user: 'abiu',
-  password: '8818637',
-  database: 'huihe',
-});
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+  const dbConnection = mysql.createPool({
+    connectionLimit: 10,
+    host: 'localhost',
+    user: 'abiu',
+    password: '8818637',
+    database: 'huihe',
+  });
+  export const config = {
+    api: {
+      bodyParser: false,
+    },
+  };
+  interface Product {
+    image: any[];
+    imageDetail: any;
+    amount: number;
+    detail: any;
+    title: any;
+    category: any;
+    status: any
+  };
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    console.log(111);
-    const form = new formidable.IncomingForm();
-    form.multiples = true;
-
-
-    form.parse(req, async (err:any, fields:any, files:any) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'File upload failed' });
-      }
-
-      const title = fields.title as string;
-      const category = fields.category as string;
-      const amount = parseInt(fields.amount as string, 10);
-      const status = fields.status as string;
-      const imageDetail=fields.imageDetail.split(',');
-      const detail=fields.detail;
-
-      let imageUrls=[];
-      const uploadedFiles = Object.values(files) as formidable.File[];
-
-      if (uploadedFiles.length === 0) {
-        return res.status(400).json({ error: 'No files uploaded' });
-      }
-      console.log(uploadedFiles.length);
-
+  function renameFile(oldPath: string, newPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
       try {
-        for (const file of uploadedFiles) {
-          const filePath = file.filepath;
-          const fileName = file.originalFilename;
-          const targetPath = `./public/product/${fileName}`;
-          console.log(filePath);
-          renameFile(filePath, targetPath);
-          const imageUrl=targetPath.replace('./public','')
-          imageUrls.push(imageUrl);
+        fs.renameSync(oldPath, newPath);
+      }catch (err){
+        reject()
+      }
+      resolve();
+    });
+  }
+
+  export default function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method === 'POST') {
+      console.log(111);
+      const form = new formidable.IncomingForm();
+      form.multiples = true;
+
+
+      form.parse(req, async (err:any, fields:any, files:any) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'File upload failed' });
         }
-        const product = {
-          image: imageUrls,
-          title: title,
-          category: category,
-          amount:  amount,
-          status: status,
-          imageDetail:imageDetail,
-          detail: detail,
-        };
-        console.log(product);
-        dbConnection.getConnection((err, connection) => {
-          if (err) {
-            console.error('Error connecting to database:', err);
-            return res.status(500).json({ error: 'Error connecting to database' });
+
+
+
+        const {status,title,category,detail} = fields ;
+        const amount = parseInt(fields.amount as string);
+        const imageDetail=fields.imageDetail.split(',');
+
+
+        const directoryPath = `./public/product/${title}`;
+        if (!fs.existsSync(directoryPath)) {
+          fs.mkdirSync(directoryPath, { recursive: true });
+        }
+        const imageUrls:string[]=[];
+        const uploadedFiles = Object.values(files) as formidable.File[];
+
+        if (uploadedFiles.length === 0) {
+          return res.status(400).json({ error: 'No files uploaded' });
+        }
+        console.log(uploadedFiles.length);
+
+        try {
+          for (let i = 0; i < uploadedFiles.length; i++){
+            const file = uploadedFiles[i];
+            const filePath = file.filepath;
+            const fileName = file.originalFilename;
+            const targetPath = `${directoryPath}/${fileName}`;
+            console.log(filePath);
+            renameFile(filePath, targetPath).then(() => {
+              const imageUrl=targetPath.replace('./public','')
+              imageUrls.push(imageUrl);
+            });
           }
 
-          // 查询数据库中的产品数据
-          connection.query('INSERT INTO products (image, title, category, amount, status,imageDetail,detail) VALUES (?, ?, ?, ?, ?, ?, ?)', [
-            JSON.stringify(product.image),
-            product.title,
-            product.category,
-            product.amount,
-            product.status,
-            JSON.stringify(product.imageDetail),
-            product.detail,
-          ])
-        });
+          const product:Product = {
+            image: imageUrls,
+            title,
+            category,
+            amount,
+            status,
+            imageDetail,
+            detail,
+          };
+          console.log(product);
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          dbConnection.getConnection((err:NodeJS.ErrnoException|null, connection) => {
+            if (err) {
+              console.error('Error connecting to database:', err);
+              return res.status(500).json({ error: 'Error connecting to database' });
+            }
 
-        res.status(200).json({ message: 'add product successfully' });
-      } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'File upload failed' });
-      }
-    });
+            // 查询数据库中的产品数据
+            connection.query('INSERT INTO products (image, title, category, amount, status,imageDetail,detail) VALUES (?, ?, ?, ?, ?, ?, ?)', [
+              JSON.stringify(product.image),
+              product.title,
+              product.category,
+              product.amount,
+              product.status,
+              JSON.stringify(product.imageDetail),
+              product.detail,
+            ])
+          });
 
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
-  }
-}
+          res.status(200).json({ message: 'add product successfully' });
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ error: 'File upload failed' });
+        }
+      });
 
-function renameFile(oldPath: string, newPath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    try {
-      fs.renameSync(oldPath, newPath);
-    }catch (err){
-      reject()
+    } else {
+      res.status(405).json({ error: 'Method not allowed' });
     }
-    resolve();
-  });
-}
+  }
+
 
 

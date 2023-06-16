@@ -26,25 +26,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (err) {
           console.error('查询用户名时出现错误', err);
           res.status(500).json({ message: '注册失败' });
-        } else {
-          if (results.length > 0) {
+        } else if (results.length > 0) {
             // 用户名已存在，返回错误消息
             res.status(409).json({ message: '用户名已存在' });
           } else {
             // 插入用户数据到数据库
             const insertQuery = 'INSERT INTO user (username, password) VALUES (?, ?)';
             const values = [username, hashedPassword];
-            dbConnection.query(insertQuery, values, (err, results) => {
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+            dbConnection.query(insertQuery, values, (err:mysql.QueryError|null, results) => {
               if (err) {
                 console.error('插入数据时出现错误', err);
-                res.status(500).json({ message: '注册失败',results:results });
+                res.status(500).json({ message: '注册失败',results });
               } else {
                 console.log('用户数据插入成功');
                 res.status(200).json({ message: '注册成功' });
               }
             });
           }
-        }
       });
     } catch (error) {
       // 处理错误情况

@@ -1,12 +1,10 @@
 import { FC } from 'react';
 
-const Index: FC = () => {
+const Index: FC = () => (
+  <div className='flex-grow border-32  '>
 
-  return (
-    <div className={'flex-grow border-32  '}>
-      setting
-    </div>
-  );
-};
+    setting
+  </div>
+);
 
 export default Index;

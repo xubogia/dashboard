@@ -18,7 +18,7 @@ export default function handler(
   res: NextApiResponse
 ) {
   console.log('getting orders')
-  const oreders=mocker.order().getOrders(30);
-  return res.status(200).json(oreders);
+  const orders:Order[]=mocker.order().getOrders(30);
+  return res.status(200).json(orders);
 
 }

@@ -6,47 +6,46 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useState, useEffect, FC } from 'react';
-import UploadImage from '@/components/Dialog/uploadImage';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import axios from 'axios';
-import useStore from '@/date/store';
+import UploadImage from './uploadImage';
+import useStore from '../../date/store';
 
 interface Product {
-  image:string[];
-  imageDetail:string[];
+  image: string[];
+  imageDetail: string[];
   title: string;
   id: number;
   category: string;
   amount: string;
   status: string;
-  detail:string;
+  detail: string;
 }
 
-interface newProduct {
-  newImage:any[];
-  imageDetail:string[];
-  image:string[];
+interface NewProduct {
+  newImage: any[];
+  imageDetail: string[];
+  image: string[];
   title: string;
   id: number;
   category: string;
   amount: string;
   status: string;
-  detail:string
+  detail: string;
 }
 
-
-interface Pros{
-  open:boolean;
-  productData:Product;
-  handleClose:()=>void;
+interface Pros {
+  open: boolean;
+  productData: Product;
+  handleClose: () => void;
 }
 
-const FormDialog :FC<Pros>= ({ open, productData, handleClose }) => {
-  const initialProductData: newProduct = {...productData,newImage:[]}
-  const [updatedProductData, setUpdatedProductData] = useState<newProduct>(initialProductData);
+const FormDialog: FC<Pros> = ({ open, productData, handleClose }) => {
+  const initialProductData: NewProduct = { ...productData, newImage: [] };
+  const [updatedProductData, setUpdatedProductData] = useState<NewProduct>(initialProductData);
   // @ts-ignore
   const setIsProductsChanged = useStore((state) => state.setIsProductsChanged);
   // @ts-ignore
@@ -55,10 +54,10 @@ const FormDialog :FC<Pros>= ({ open, productData, handleClose }) => {
   //   setUpdatedProductData(productData);
   // }, [productData]);
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(updatedProductData);
-  },[updatedProductData])
-  const handleChange = (e:any) => {
+  }, [updatedProductData]);
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     setUpdatedProductData((prevState) => ({
       ...prevState,
@@ -67,47 +66,44 @@ const FormDialog :FC<Pros>= ({ open, productData, handleClose }) => {
   };
 
 
-
-
-
   const handleSave = () => {
     console.log(updatedProductData);
     const formData = new FormData();
-    formData.append('id',updatedProductData.id.toString());
+    formData.append('id', updatedProductData.id.toString());
     formData.append('title', updatedProductData.title);
     formData.append('category', updatedProductData.category);
     formData.append('amount', updatedProductData.amount);
     formData.append('status', updatedProductData.status);
-   formData.append('image',updatedProductData.image.join(','));
-   formData.append('imageDetail',updatedProductData.imageDetail.join(','));
+    formData.append('image', updatedProductData.image.join(','));
+    formData.append('imageDetail', updatedProductData.imageDetail.join(','));
 
     updatedProductData.newImage.forEach((file, index) => {
       formData.append(`file${index + 1}`, file);
     });
-    console.log('form',formData)
+    console.log('form', formData);
 
 
-   axios.post('/api/product/edit',formData,{
-     headers: {
-       'Content-Type': 'multipart/form-data'
-     }
-   }).then(response=>{
-     setIsProductsChanged(true);
-     console.log(response.data.message); // 输出删除成功的消息
-     console.log('updata',getIsProductsChanged());
-     handleClose();
-   }).catch(error=>{
-     console.error(error);
-   })
+    axios.post('/api/product/edit', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }).then(response => {
+      setIsProductsChanged(true);
+      console.log(response.data.message); // 输出删除成功的消息
+      console.log('updata', getIsProductsChanged());
+      handleClose();
+    }).catch(error => {
+      console.error(error);
+    });
     console.log(updatedProductData);
 
   };
 
-  const handleImageChange = (prop:string,imageFiles: any[]) => {
-    console.log('imageFiles',imageFiles);
-   setUpdatedProductData((prevState) => ({
+  const handleImageChange = (prop: string, imageFiles: any[]) => {
+    console.log('imageFiles', imageFiles);
+    setUpdatedProductData((prevState) => ({
       ...prevState,
-    [prop]: imageFiles
+      [prop]: imageFiles,
     }));
   };
 
@@ -117,59 +113,59 @@ const FormDialog :FC<Pros>= ({ open, productData, handleClose }) => {
         <DialogTitle>编辑商品</DialogTitle>
         <DialogContent>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-            <UploadImage name="image" value={updatedProductData} onChange={handleImageChange} />
+            <UploadImage value={updatedProductData} onChange={handleImageChange} />
           </div>
           <TextField
             autoFocus
-            margin="dense"
-            id="name"
-            label="商品名称"
-            type="text"
-            name="title"
+            margin='dense'
+            id='name'
+            label='商品名称'
+            type='text'
+            name='title'
             value={updatedProductData.title}
             onChange={handleChange}
             fullWidth
           />
           <TextField
-            margin="dense"
-            id="category"
-            label="商品分类"
-            type="text"
-            name="category"
+            margin='dense'
+            id='category'
+            label='商品分类'
+            type='text'
+            name='category'
             value={updatedProductData.category}
             onChange={handleChange}
             fullWidth
           />
-          <FormControl fullWidth margin="dense" >
-            <InputLabel htmlFor="status">状态</InputLabel>
+          <FormControl fullWidth margin='dense'>
+            <InputLabel htmlFor='status'>状态</InputLabel>
             <Select
 
               label='状态'
-              id="status"
-              name="status"
+              id='status'
+              name='status'
               value={updatedProductData.status}
               onChange={handleChange}
             >
-              <MenuItem value="已上架">已上架</MenuItem>
-              <MenuItem value="未上架">未上架</MenuItem>
+              <MenuItem value='已上架'>已上架</MenuItem>
+              <MenuItem value='未上架'>未上架</MenuItem>
             </Select>
           </FormControl>
           <TextField
-            margin="dense"
-            id="amount"
-            label="商品金额"
-            type="text"
-            name="amount"
+            margin='dense'
+            id='amount'
+            label='商品金额'
+            type='text'
+            name='amount'
             value={updatedProductData.amount}
             onChange={handleChange}
             fullWidth
           />
           <TextField
-            margin="dense"
-            id="detail"
-            label="商品详情"
-            type="text"
-            name="detail"
+            margin='dense'
+            id='detail'
+            label='商品详情'
+            type='text'
+            name='detail'
             value={updatedProductData.detail}
             onChange={handleChange}
             fullWidth
@@ -184,4 +180,4 @@ const FormDialog :FC<Pros>= ({ open, productData, handleClose }) => {
   );
 };
 
-export default  React.memo(FormDialog);
+export default React.memo(FormDialog);

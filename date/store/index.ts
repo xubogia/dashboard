@@ -1,12 +1,14 @@
 import create from 'zustand';
 
+
 const useStore = create((set, get) => ({
   searchText: '',
-  setSearchText: (text) => set(() => ({ searchText: text })),
+  setSearchText: (text:string) => set(() => ({ searchText: text })),
   productData: {},
-  setProductData: (data) => set(() => ({ productData: data })),
+  setProductData: (data:any) => set(() => ({ productData: data })),
   isProductsChanged: false,
-  setIsProductsChanged: (state) => set(() => ({ isProductsChanged: state })),
+  setIsProductsChanged: (state:boolean) => set(() => ({ isProductsChanged: state })),
+  // @ts-ignore
   getIsProductsChanged: () => get().isProductsChanged, // 添加用于获取状态的方法
 }));
 

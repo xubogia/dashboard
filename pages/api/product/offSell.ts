@@ -13,11 +13,10 @@ const dbConnection = mysql.createPool({
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     console.log(req.body)
-    const ids=req.body.ids;
+    const {ids} = req.body;
     console.log(ids);
     const updateStatus = () => {
-      const promises = ids.map((id:any) => {
-        return new Promise((resolve, reject) => {
+      const promises = ids.map((id:any) => new Promise((resolve, reject) => {
           dbConnection.query(
             'UPDATE products SET `status` = ? WHERE id = ?',
             ['未上架', id],
@@ -29,8 +28,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
               }
             }
           );
-        });
-      });
+        }));
 
       return Promise.all(promises);
     };

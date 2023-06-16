@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import axios from 'axios';
-import Menu from '../menu';
 import { DataGrid } from '@mui/x-data-grid';
+import Menu from '../menu';
 import columns from './columns';
 
 interface Order {
@@ -63,9 +63,9 @@ const Index: FC<{ searchText: string }> = ({ searchText }) => {
   }, [data, searchText]);
 
 
-  const getRowHeight = (): number => {
-    return 80; // 设置行的高度为 120
-  };
+  const getRowHeight = (): number =>
+     80 // 设置行的高度为 120
+  ;
 
 
   return (
@@ -80,7 +80,7 @@ const Index: FC<{ searchText: string }> = ({ searchText }) => {
             },
           }]} />
           <div className={' '}>
-            <button className={'w-60 bg-blue-500 justify-center items-center py-2 rounded-lg text-white'}>添加订单
+            <button className="w-60 bg-blue-500 justify-center items-center py-2 rounded-lg text-white" type='button'>添加订单
             </button>
           </div>
 
@@ -107,18 +107,10 @@ const Index: FC<{ searchText: string }> = ({ searchText }) => {
               <span>全选</span>
             </div>
             <div className='h-full flex items-center justify-center space-x-2'>
-              <button className='w-20 h-6 rounded-lg bg-red-500 text-white text-xs tracking-widest'>删除</button>
-              <button className='w-20 h-6 rounded-lg bg-green-500 text-white text-xs tracking-widest'>发货</button>
-              <button className='w-20 h-6 rounded-lg bg-blue-500 text-white text-xs tracking-widest'>导出</button>
+              <button className='w-20 h-6 rounded-lg bg-red-500 text-white text-xs tracking-widest' type='button'>删除</button>
+              <button className='w-20 h-6 rounded-lg bg-green-500 text-white text-xs tracking-widest' type='button'>发货</button>
+              <button className='w-20 h-6 rounded-lg bg-blue-500 text-white text-xs tracking-widest' type='button'>导出</button>
             </div>
-          </div>
-          <div className='flex flex-row space-x-4'>
-
-
-            {/*<Button variant='outlined' onClick={() => goToPreviousPage()}>上一页</Button>*/}
-
-            {/*<Button variant='text'>{currentPage}</Button>*/}
-            {/*<Button variant='outlined' onClick={() => goToNextPage()}>下一页</Button>*/}
           </div>
         </div>
       </div>

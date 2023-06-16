@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import HuiHe from '../../asset/image/huihe.jpg'
 import Image from 'next/image';
+import HuiHe from '../../asset/image/huihe.jpg'
+
 const Index = () => {
   // 获取路由实例
   const router = useRouter();
@@ -29,7 +30,7 @@ const Index = () => {
         // localStorage.setItem('token', token);
 
         // 重定向由服务器端逻辑处理
-        router.push('/');
+        await router.push('/');
         // 不在前端进行重定向
       } else {
         // 登录失败，显示错误提示
@@ -41,8 +42,7 @@ const Index = () => {
   };
 
   return (
-    <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <Image
             className="mx-auto "
@@ -56,7 +56,8 @@ const Index = () => {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" action="#"  onSubmit={handleLoginFormSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+              <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
                 账号
               </label>
               <div className="mt-2">
@@ -73,6 +74,7 @@ const Index = () => {
 
             <div>
               <div className="flex items-center justify-between">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                   密码
                 </label>
@@ -112,7 +114,6 @@ const Index = () => {
           </p>
         </div>
       </div>
-    </>
   )
 }
 
