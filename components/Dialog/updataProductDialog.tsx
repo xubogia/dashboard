@@ -47,8 +47,6 @@ interface Pros{
 const FormDialog :FC<Pros>= ({ open, productData, handleClose }) => {
   const initialProductData: newProduct = {...productData,newImage:[]}
   const [updatedProductData, setUpdatedProductData] = useState<newProduct>(initialProductData);
-  const images = productData.image;
-  const [imageTemp,setImageTemp]=useState(0);
   // @ts-ignore
   const setIsProductsChanged = useStore((state) => state.setIsProductsChanged);
   // @ts-ignore

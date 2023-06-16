@@ -1,5 +1,6 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import Button from '@mui/material/Button';
+import Image from 'next/image';
 
 interface NewProduct {
   image:string[];
@@ -11,7 +12,7 @@ interface Props {
  onChange:(prop:string,images:any[])=>void;
 }
 
-const ImageUploader:FC<Props> = ({name,value, onChange}) => {
+const ImageUploader:FC<Props> = ({value, onChange}) => {
   const [selectedImages, setSelectedImages] = useState(value.image);
   const [imageFiles,setImageFiles]=useState<File[]>([])
   const [imageDetail, setImageDetail] = useState<string[]>(value.imageDetail);
@@ -64,12 +65,12 @@ const ImageUploader:FC<Props> = ({name,value, onChange}) => {
         {
           selectedImages.length !== 0 &&
           selectedImages.map((image, index) => (
-            <div key={index} className="flex flex-col mb-4 space-y-2 w-40 ">
-              <div className={'flex flex-row justify-between '}>
+            <div key={index} className="flex flex-col mb-4 space-y-2  justify-center items-center ">
+              <div className={'flex flex-row justify-between px-4 space-x-4'}>
                 <input
                   type="text"
                   placeholder={'颜色'}
-                  className={'border w-1/2'}
+                  className={'border w-full'}
                   required={true}
                   value={
                   imageDetail[index] ||
@@ -88,7 +89,7 @@ const ImageUploader:FC<Props> = ({name,value, onChange}) => {
                   x
                 </button>
               </div>
-              <img src={image} alt="Uploaded" className="w-40 h-40 object-cover mr-4" />
+              <Image src={image} alt="Uploaded" width={150} height={150}  />
             </div>
           ))
         }
