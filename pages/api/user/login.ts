@@ -16,6 +16,21 @@ const dbConnection = mysql.createPool({
 });
 // 登录 API 处理函数
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  // 设置允许跨域的请求源
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+
+  // 设置允许的请求方法
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+
+  // 设置允许的请求头
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    // 返回一个带有 HTTP 200 OK 状态的响应，处理预检请求
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === 'POST') {
     const { username, password } = req.body;
 

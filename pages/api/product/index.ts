@@ -8,6 +8,7 @@ interface Product {
   category: string;
   price: number;
   status: string;
+  size:string[];
 }
 
 const dbConnection = mysql.createPool({
@@ -37,8 +38,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(500).json({ error: 'Error executing query' });
       }
 
-      // 将产品数据发送回客户端
-      console.log(Array.isArray(results[0].image));
       return res.status(200).json(results);
     });
   });

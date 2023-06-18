@@ -9,9 +9,6 @@ interface Props {
 const Index: FC<Props> = ({Right}) => {
   const [searchText,setSearchText]=useState('');
 
-  useEffect(()=>{
-    console.log(searchText)
-  },[searchText]);
   return (
     <div className="flex-grow flex flex-col">
       <Header setSearchText={setSearchText}/>

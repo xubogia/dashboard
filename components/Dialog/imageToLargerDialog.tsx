@@ -8,12 +8,10 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 interface Prop{
   open:boolean;
-  images:any[];
+  image:string;
   handleClose:()=>void;
 }
-const Index:FC<Prop> = ({ open, images, handleClose }) => {
-  const [imageTemp, setImageTemp] = useState(0);
-
+const Index:FC<Prop> = ({ open, image, handleClose }) => {
 
   const handleClickAway = () => {
     if (open) {
@@ -21,37 +19,20 @@ const Index:FC<Prop> = ({ open, images, handleClose }) => {
     }
   };
 
-  const handlePreOne = () => {
-    if (imageTemp !== 0) {
-      const pre = imageTemp - 1;
-      setImageTemp(pre);
-      console.log(imageTemp);
 
-    }
 
-  };
-  const handleNextOne = () => {
-    if (imageTemp < images.length - 1) {
-      const next = imageTemp + 1;
-      setImageTemp(next);
-      console.log(imageTemp);
-    }
-  };
 
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
         <ClickAwayListener onClickAway={handleClickAway}>
           <div className="flex flex-row ">
-            <Button onClick={handlePreOne}>上一张</Button>
             <DialogContent>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-                <Image src={images[imageTemp].image} alt='商品图片' width={400} height={400} />
+                <Image src={image} alt='商品图片' width={400} height={400} />
 
               </div>
-              <div className="text-center">{`${imageTemp + 1  }/${  images.length}`}</div>
             </DialogContent>
-            <Button onClick={handleNextOne}>下一张</Button>
           </div>
         </ClickAwayListener>
       </Dialog>

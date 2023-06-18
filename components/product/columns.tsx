@@ -2,7 +2,7 @@ import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { useState } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
-import Dialog from '../Dialog/updataProductDialog';
+import Dialog from '../Dialog/editProductDialog';
 import ImageDialog from '../Dialog/imageDialog';
 import useStore from '../../date/store';
 
@@ -31,10 +31,10 @@ const ImageCell = (params: GridRenderCellParams<any, any, any>) => {
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
     <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleOpen}>
-      <Image src={params.value[0] as string} alt='商品图片' width={40} height={40} />
+      <Image src={params.value[0].image} alt='商品图片' width={40} height={40} />
       {isHovered && (
         <div className="fixed top-20 left-80 ">
-          <Image src={params.value[0] as string} alt='放大的图片' width={400} height={400} />
+          <Image src={params.value[0].image} alt='放大的图片' width={400} height={400} />
         </div>
       )}
       {previewImage && <ImageDialog open={previewImage} images={params.value} handleClose={handleClose} />}
@@ -103,7 +103,7 @@ const OperatorCell = (params: GridRenderCellParams<any, any, any>) => {
 
 const columns: GridColDef[] = [
   {
-    field: 'image',
+    field: 'eachDetail',
     headerName: '图片',
     flex: 1,
     renderCell: ImageCell,

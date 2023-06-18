@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import axios from 'axios';
 import { DataGrid, GridRowSelectionModel } from '@mui/x-data-grid';
 import columns from './columns';
@@ -6,8 +6,13 @@ import AddProductDialog from '../Dialog/addProductDialog';
 import useStore from '../../date/store';
 import Menu from '../menu';
 
+interface EachDetail {
+  image:string;
+  imageDetail:string;
+  size:string[]
+}
 interface Product {
-  image: string[];
+  eachDetail:EachDetail[];
   title: string;
   id: number;
   category: string;
@@ -37,17 +42,39 @@ const Index: FC<Pros> = ({ searchText }) => {
   // 获取 isProductsChanged 状态
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
 
+  const fetchData = async () => {
+    let result;
+    try {
+      result = sessionStorage.getItem('productData');
+      console.log(result);
+      if (result) {
+        result = JSON.parse(result);
+      } else {
+        const response = await axios.get('/api/product');
+        result = response.data;
+        sessionStorage.setItem('productData', JSON.stringify(result));
+      }
+      console.log('result', result);
+      setData(result);
+      setRow(result);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData().then();
+  }, []);
 
   const handleStateChange = (newState: '全部商品' | '已上架' | '未上架') => {
     setState(newState);
   };
 
   const handleOpenAddProductDialog = () => {
-    // console.log(params.row);
     if (!addProductDialog) {
       setAddProductDialog(true);
     }
-    // setProductData(params.row);
   };
   const handleCloseAddProductDialog = () => {
     setAddProductDialog(false);
@@ -100,27 +127,9 @@ const Index: FC<Pros> = ({ searchText }) => {
         console.error('Error deleting products:', error);
       });
   };
-  const fetchData = async () => {
-    let result;
-    try {
-      result = sessionStorage.getItem('productData');
-      console.log(result);
-      if (result) {
-        result = JSON.parse(result);
-      } else {
-        const response = await axios.get('/api/product');
-        result = response.data;
-        sessionStorage.setItem('productData', JSON.stringify(result));
-      }
-      console.log('result', result);
-      setData(result);
-      setRow(result);
 
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-  const filterRow = useCallback(() => {
+
+  useEffect(()=>{
     if (data.length !== 0) {
       let rowTemp = data;
 
@@ -129,10 +138,9 @@ const Index: FC<Pros> = ({ searchText }) => {
       }
       if (searchText !== '') {
         rowTemp = rowTemp.filter(
-          (product) =>
-            product.title.includes(searchText) ||
-            product.id.toString().includes(searchText),
-        );
+          (product) =>Object.values(product).some((value) =>
+            value.toString().includes(searchText)
+          ))
       }
       if (state !== '全部商品') {
         console.log(state);
@@ -141,12 +149,11 @@ const Index: FC<Pros> = ({ searchText }) => {
 
       setRow(rowTemp);
     }
-  }, [data, searchText, state, category]);
+  },[data, searchText, state, category])
 
 
-  useEffect(() => {
-    fetchData().then();
-  }, []);
+
+
   useEffect(() => {
     console.log('index', isProductsChanged);
     if (isProductsChanged) {
@@ -156,16 +163,14 @@ const Index: FC<Pros> = ({ searchText }) => {
       console.log();
     }
   }, [isProductsChanged, setIsProductsChanged]);
-  useEffect(() => {
-    filterRow();
-  }, [filterRow]);
+
+
 
   const getRowHeight = (): number =>
     80 // 设置行的高度为 120
   ;
 
-  // @ts-ignore
-  // @ts-ignore
+
   return (
     <div className='w-full  flex-grow flex flex-col  px-8 py-4 border'>
       <div className='flex  items-center  '>

@@ -12,22 +12,30 @@ const dbConnection = mysql.createPool({
   database: 'huihe',
 });
 
+
+interface EachDetail {
+  image:string;
+  imageDetail:string;
+  size:string[]
+}
+interface Product {
+  eachDetail:EachDetail[];
+  title: string;
+  id: number;
+  category: string;
+  amount: number;
+  status: string;
+  detail: string;
+}
 interface NewProduct {
-  newImage: File[];
-  image: string;// need split ','
+  eachDetail: string;
   title: string;
   id: number;
   category: string;
   amount: string;
   status: string;
-}
-
-interface Product {
-  image: string[];
-  title: string;
-  category: string;
-  amount: number;
-  status: string;
+  detail: string;
+  newImage: any[];
 }
 
 export const config = {
@@ -50,86 +58,86 @@ function renameFile(oldPath: string, newPath: string): Promise<void> {
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  console.log('editing');
   if (req.method === 'POST') {
-    console.log(111);
     const form = new formidable.IncomingForm();
     form.multiples = true;
 
     let id: number;
     let newProduct: Product;
+
     form.parse(req, async (err: ErrorEvent, fields: NewProduct, files: File[]) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: 'File upload failed' });
       }
-      id = fields.id;
-      const title = fields.title as string;
-      const category = fields.category as string;
-      const amount = parseInt(fields.amount);
-      const status = fields.status as string;
-
-
-      const imageUrls = fields.image.split(',') as string[];
-
-      console.log(Array.isArray(imageUrls));
-      const uploadedFiles = Object.values(files) as formidable.File[];
-
-      console.log(uploadedFiles.length);
 
       try {
-        for (let i = 0; i < uploadedFiles.length; i++){
+        id = fields.id;
+        const amount = parseInt(fields.amount);
+
+        const { detail, title, category, status } = fields;
+
+        const eachDetail: EachDetail[] = JSON.parse(fields.eachDetail);
+
+        const uploadedFiles = Object.values(files) as formidable.File[];
+        const oldProductNum = eachDetail.length - uploadedFiles.length;
+
+        for (let i = 0; i < uploadedFiles.length; i++) {
           const file = uploadedFiles[i];
           const filePath = file.filepath;
-          const fileName = file.originalFilename;
-          const targetPath = `./public/product/${fileName}`;
-          console.log(filePath);
-          renameFile(filePath, targetPath).then(() => {
-            const imageUrl = targetPath.replace('./public', '');
-            console.log('imageUrls', imageUrls);
-            imageUrls.push(imageUrl);
-          });
 
+          const timestamp = Date.now();
+          const fileName = file.originalFilename.split(',').pop();
+          const targetPath = `./public/product/${timestamp}.${fileName}`;
 
-          
+          await renameFile(filePath, targetPath);
+
+          const imageUrl = targetPath.replace('./public', '');
+          eachDetail[oldProductNum + i].image = imageUrl;
         }
+
         newProduct = {
-          image: imageUrls,
+          eachDetail,
+          id,
           title,
           category,
           amount,
           status,
+          detail,
         };
 
         console.log(id, newProduct);
-        // res.status(200).json({ message: 'add product successfully' });
+
+        // 更新数据库中的产品数据
+        dbConnection.getConnection((err, connection) => {
+          if (err) {
+            console.error('Error connecting to database:', err);
+            return res.status(500).json({ error: 'Error connecting to database' });
+          }
+
+          connection.query(
+            'UPDATE products SET `title` = ?, `category` = ?, `amount` = ?, `status` = ?,`detail`=?,`eachDetail`= ? WHERE id = ?',
+            [newProduct.title, newProduct.category, newProduct.amount, newProduct.status, newProduct.detail, JSON.stringify(newProduct.eachDetail), id],
+            (error) => {
+              if (error) {
+                console.error('Database update error:', error);
+                return res.status(500).json({ error: 'Database update error' });
+              }
+              res.status(200).json({ message: 'Product updated successfully' });
+            },
+          );
+
+          connection.release(); // 释放数据库连接
+        });
       } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'File upload failed' });
       }
     });
-
-
-    dbConnection.getConnection((err, connection) => {
-      if (err) {
-        console.error('Error connecting to database:', err);
-        return res.status(500).json({ error: 'Error connecting to database' });
-      }
-
-      // 更新数据库中的产品数据
-      connection.query(
-        'UPDATE products SET `image` = ?, `title` = ?, `category` = ?, `amount` = ?, `status` = ? WHERE id = ?',
-        [JSON.stringify(newProduct.image), newProduct.title, newProduct.category, newProduct.amount, newProduct.status, id],
-        (error, results) => {
-          res.status(500).json({ error, result: results });
-        },
-      );
-
-    });
-
-
-    res.status(200).json({ message: 'Product updated successfully' });
   } else {
     res.status(405).json({ error: 'Method not allowed' });
   }
 }
+
 

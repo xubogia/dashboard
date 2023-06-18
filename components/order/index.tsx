@@ -50,14 +50,12 @@ const Index: FC<{ searchText: string }> = ({ searchText }) => {
 
   useEffect(() => {
     if (searchText !== '') {
-      console.log('search', searchText);
-      const rowTemp = data.filter((order) =>
-        order.name.includes(searchText) || order.id.toString().includes(searchText),
-      );
+      const rowTemp = data.filter(
+        (order) =>Object.values(order).some((value) =>
+          value.toString().includes(searchText)
+        ))
       setRow(rowTemp);
-    } else {
-      console.log(data);
-      if (data.length !== 0)
+    } else if (data.length !== 0){
         setRow(data);
     }
   }, [data, searchText]);

@@ -5,23 +5,29 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useState, FC, useEffect } from 'react';
+import { useState, FC, useEffect, useCallback } from 'react';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';
+// @ts-ignore
+import throttle from 'lodash/throttle';
 import UploadImage from './uploadImage';
 
+interface EachDetail {
+  image:string;
+  imageDetail:string;
+  size:string[]
+}
 interface NewProduct {
-  newImage: File[];
-  image: File[];
-  imageDetail: string[];
+  eachDetail:EachDetail[];
   title: string;
   category: string;
   amount: string;
   status: string;
   detail: string;
+  newImage: any[];
 }
 
 interface Props {
@@ -34,8 +40,7 @@ const categoryArr = ['拳套', '拳击绑带', '速度靶', '其他'];
 
 const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
   const initialProductData: NewProduct = {
-    image: [],
-    imageDetail: [],
+    eachDetail:[],
     title: '',
     category: '',
     amount: '',
@@ -49,22 +54,16 @@ const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
   useEffect(() => {
     console.log(productData);
   }, [productData]);
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
+  const inputThrottle = (name:string,value:any) => {
     setProductData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-
   };
+// 在事件处理程序中使用节流函数
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleChange = useCallback(throttle(inputThrottle, 1000), [productData]);
 
-  const handleAddImage = (prop: string, imageFiles: any[]) => {
-    console.log('imageFiles', imageFiles);
-    setProductData((prevState) => ({
-      ...prevState,
-      [prop]: imageFiles,
-    }));
-  };
 
   const handleSaveProduct = () => {
     console.log(productData);
@@ -73,11 +72,11 @@ const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
     formData.append('category', productData.category);
     formData.append('amount', productData.amount);
     formData.append('status', productData.status);
-    formData.append('imageDetail', productData.imageDetail.join(','));
     formData.append('detail', productData.detail);
-
-    productData.image.forEach((file, index) => {
-      formData.append(`${productData.imageDetail[index]}`, file);
+    const eachDetailJSON=JSON.stringify(productData.eachDetail);
+    formData.append('eachDetail',eachDetailJSON);
+    productData.newImage.forEach((file, index) => {
+      formData.append(`$file${index}`, file);
     });
 
     axios.post('/api/product/add', formData, {
@@ -104,8 +103,8 @@ const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
         <DialogTitle>添加商品</DialogTitle>
 
         <DialogContent>
-          <UploadImage value={{ image: [], imageDetail: productData.imageDetail }}
-                       onChange={handleAddImage} />
+          <UploadImage value={productData}
+                       onChange={handleChange} />
           <TextField
             autoFocus
             margin='dense'
@@ -114,7 +113,7 @@ const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
             type='text'
             name='title'
             value={productData.title}
-            onChange={handleChange}
+            onChange={event => handleChange(event.target.name,event.target.value)}
             fullWidth
           />
           <FormControl fullWidth margin='dense'>
@@ -125,7 +124,7 @@ const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
               id='status'
               name='category'
               value={productData.category}
-              onChange={handleChange}
+              onChange={event => handleChange(event.target.name,event.target.value)}
             >
               {categoryArr.map((category) => <MenuItem value={category}>{category}</MenuItem>)}
 
@@ -139,7 +138,7 @@ const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
               id='status'
               name='status'
               value={productData.status}
-              onChange={handleChange}
+              onChange={event => handleChange(event.target.name,event.target.value)}
             >
               <MenuItem value='已上架'>已上架</MenuItem>
               <MenuItem value='未上架'>未上架</MenuItem>
@@ -154,7 +153,7 @@ const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
             type='text'
             name='amount'
             value={productData.amount}
-            onChange={handleChange}
+            onChange={event => handleChange(event.target.name,event.target.value)}
             fullWidth
           />
 
@@ -165,7 +164,7 @@ const FormDialog: FC<Props> = ({ open, handleClose, isProductAdd }) => {
             type='text'
             name='detail'
             value={productData.detail}
-            onChange={handleChange}
+            onChange={event => handleChange(event.target.name,event.target.value)}
             fullWidth
           />
         </DialogContent>
