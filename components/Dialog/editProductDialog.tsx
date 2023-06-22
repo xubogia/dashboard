@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import TextareaAutosize from '@mui/material/TextareaAutosize'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -128,10 +127,10 @@ const FormDialog: FC<Pros> = ({ open, productData, handleClose }) => {
           console.error(error);
         });
       })
-      .catch((validationErrors) => {
+      .catch((validationErrorsTemp) => {
         // 输入数据无效，保存错误信息并进行渲染
         const errors: ValidationErrors = {};
-        validationErrors.inner.forEach((error) => {
+        validationErrorsTemp.inner.forEach((error:any) => {
           errors[error.path] = error.message;
         });
         console.log(errors);

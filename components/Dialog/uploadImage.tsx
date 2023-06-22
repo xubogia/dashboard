@@ -29,7 +29,7 @@ interface NewProduct {
 interface Props {
   value: NewProduct;
   onChange: (prop: string, images: any[]) => void;
-  validationError:object;
+  validationError:any;
 }
 
 const ImageUploader: FC<Props> = ({ value, onChange,validationError }) => {
@@ -41,9 +41,7 @@ const ImageUploader: FC<Props> = ({ value, onChange,validationError }) => {
     setPreviewImage(false);
   };
 
-  useEffect(()=>{
-    console.log(validationError["eachDetail[0].imageDetail"]);
-  },[validationError])
+
 
   const handleImageUpload = (event: any) => {
     const { files } = event.target;
