@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import TextareaAutosize from '@mui/material/TextareaAutosize'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -13,6 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import axios from 'axios';
 // @ts-ignore
 import throttle from 'lodash/throttle';
+import * as yup from 'yup';
 import UploadImage from './uploadImage';
 import useStore from '../../date/store';
 
@@ -46,6 +48,9 @@ interface Pros {
   productData: Product;
   handleClose: () => void;
 }
+interface ValidationErrors {
+  [key: string]: string;
+}
 
 
 const FormDialog: FC<Pros> = ({ open, productData, handleClose }) => {
@@ -55,6 +60,8 @@ const FormDialog: FC<Pros> = ({ open, productData, handleClose }) => {
   const setIsProductsChanged = useStore((state) => state.setIsProductsChanged);
   // @ts-ignore
   const getIsProductsChanged = useStore((state) => state.getIsProductsChanged);
+  const [validationErrors, setValidationErrors] = useState({});
+
 
 
   const inputThrottle = (name:string,value:any) => {
@@ -62,6 +69,7 @@ const FormDialog: FC<Pros> = ({ open, productData, handleClose }) => {
       ...prevState,
       [name]: value,
     }));
+    console.log(value);
   };
 // 在事件处理程序中使用节流函数
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,53 +77,71 @@ const FormDialog: FC<Pros> = ({ open, productData, handleClose }) => {
 
 
   const handleSave = () => {
-    const formData = new FormData();
-    formData.append('id', updatedProductData.id.toString());
-    formData.append('title', updatedProductData.title);
-    formData.append('category', updatedProductData.category);
-    formData.append('amount', updatedProductData.amount);
-    formData.append('status', updatedProductData.status);
-    formData.append('detail', updatedProductData.detail);
-    const eachDetailJSON=JSON.stringify(updatedProductData.eachDetail);
-    formData.append('eachDetail',eachDetailJSON);
-
-
-
-    // formData.append('image', updatedProductData.image.join(','));
-    // formData.append('imageDetail', updatedProductData.imageDetail.join(','));
-
-    // const sizeTemp=JSON.stringify(updatedProductData.size);
-    // formData.append('size',sizeTemp);
-    // console.log(sizeTemp);
-
-    updatedProductData.newImage.forEach((file, index) => {
-      formData.append(`file${index + 1}`, file);
+    const schema = yup.object().shape({
+      title: yup.string().required('商品名称是必填项'),
+      category: yup.string().required('分类是必填项'),
+      status: yup.string().required('状态是必填项'),
+      amount: yup.string().required('商品金额是必填项'),
+      detail: yup.string().required('商品详情是必填项'),
+      eachDetail: yup
+        .array()
+        .of(
+          yup.object().shape({
+            imageDetail: yup.string().required('颜色是必填项'),
+            size: yup.array().min(1, '至少选择一个尺寸'),
+          })
+        )
+        .required('至少需要一个商品详情'),
     });
-    console.log('form', formData);
-    console.log(updatedProductData);
 
-    axios.post('/api/product/edit', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }).then(response => {
-      setIsProductsChanged(true);
-      console.log(response.data.message); // 输出删除成功的消息
-      console.log('updata', getIsProductsChanged());
-      handleClose();
-    }).catch(error => {
-      console.error(error);
-    });
+    schema
+      .validate(updatedProductData, { abortEarly: false })
+      .then((validData) => {
+        // 输入数据有效，继续进行保存逻辑
+        console.log('有效的数据:', validData);
+        const formData = new FormData();
+        formData.append('id', updatedProductData.id.toString());
+        formData.append('title', updatedProductData.title);
+        formData.append('category', updatedProductData.category);
+        formData.append('amount', updatedProductData.amount);
+        formData.append('status', updatedProductData.status);
+        formData.append('detail', updatedProductData.detail);
+        const eachDetailJSON=JSON.stringify(updatedProductData.eachDetail);
+        formData.append('eachDetail',eachDetailJSON);
+
+        updatedProductData.newImage.forEach((file, index) => {
+          formData.append(`file${index + 1}`, file);
+        });
+        console.log('form', formData);
+        console.log(updatedProductData);
+
+        axios.post('/api/product/edit', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }).then(response => {
+          setIsProductsChanged(true);
+          console.log(response.data.message); // 输出删除成功的消息
+          console.log('updata', getIsProductsChanged());
+          handleClose();
+        }).catch(error => {
+          console.error(error);
+        });
+      })
+      .catch((validationErrors) => {
+        // 输入数据无效，保存错误信息并进行渲染
+        const errors: ValidationErrors = {};
+        validationErrors.inner.forEach((error) => {
+          errors[error.path] = error.message;
+        });
+        console.log(errors);
+        setValidationErrors(errors);
+      });
 
 
   };
 
-  // const handleImageChange = (prop: string, imageFiles: any[]) => {
-  //   setUpdatedProductData((prevState) => ({
-  //     ...prevState,
-  //     [prop]: imageFiles,
-  //   }));
-  // };
+
 
   return (
     <div>
@@ -123,7 +149,7 @@ const FormDialog: FC<Pros> = ({ open, productData, handleClose }) => {
         <DialogTitle>编辑商品</DialogTitle>
         <DialogContent>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-            <UploadImage value={updatedProductData} onChange={handleChange} />
+            <UploadImage value={updatedProductData} onChange={handleChange} validationError={validationErrors} />
           </div>
           <TextField
             autoFocus
@@ -171,6 +197,7 @@ const FormDialog: FC<Pros> = ({ open, productData, handleClose }) => {
             fullWidth
           />
           <TextField
+            multiline
             margin='dense'
             id='detail'
             label='商品详情'

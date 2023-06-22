@@ -25,7 +25,7 @@ interface Pros {
   searchText: string;
 }
 
-const categoryArr = ['所有类别', '拳套', '拳击绑带', '速度靶'];
+
 
 const Index: FC<Pros> = ({ searchText }) => {
   const [state, setState] = useState<'全部商品' | '已上架' | '未上架'>('全部商品');
@@ -33,6 +33,7 @@ const Index: FC<Pros> = ({ searchText }) => {
   const [data, setData] = useState<Product[]>([]);
   const [row, setRow] = useState<Product[]>([]);
   const [addProductDialog, setAddProductDialog] = useState(false);
+  const [categoryArr,setCategoryArr]=useState<string[]>([]);
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const setIsProductsChanged = useStore((state) => state.setIsProductsChanged);
@@ -43,20 +44,27 @@ const Index: FC<Pros> = ({ searchText }) => {
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
 
   const fetchData = async () => {
-    let result;
+    let products;
+    let categorys;
     try {
-      result = sessionStorage.getItem('productData');
-      console.log(result);
-      if (result) {
-        result = JSON.parse(result);
+      products = sessionStorage.getItem('productData');
+      products = sessionStorage.getItem('categoryData');
+      console.log(products);
+      if (products&&categorys) {
+        products = JSON.parse(products);
+        categorys=JSON.parse(categorys);
       } else {
-        const response = await axios.get('/api/product');
-        result = response.data;
-        sessionStorage.setItem('productData', JSON.stringify(result));
+        let response = await axios.get('/api/product');
+        products = response.data;
+        sessionStorage.setItem('productData', JSON.stringify(products));
+        response=await axios.get('/api/product/category/get');
+        categorys=response.data;
+        sessionStorage.setItem('categoryData',JSON.stringify(categorys));
+        setCategoryArr(categorys);
       }
-      console.log('result', result);
-      setData(result);
-      setRow(result);
+      console.log('result', products);
+      setData(products);
+      setRow(products);
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -86,6 +94,8 @@ const Index: FC<Pros> = ({ searchText }) => {
   const handleOnSelLClick = () => {
     console.log(rowSelectionModel);
     const selectedIds = rowSelectionModel.map((rowId) => rowId); // 获取选中行的 id 数组
+    if(selectedIds.length===0)
+      return;
     axios.post('/api/product/onSell', { ids: selectedIds })
       .then(response => {
         console.log(response.data.message); // 输出成功的消息
@@ -102,6 +112,8 @@ const Index: FC<Pros> = ({ searchText }) => {
   const handleOffSellClick = () => {
     console.log(rowSelectionModel);
     const selectedIds = rowSelectionModel.map((rowId) => rowId); // 获取选中行的 id 数组
+    if(selectedIds.length===0)
+      return;
     axios.post('/api/product/offSell', { ids: selectedIds })
       .then(response => {
         console.log(response.data.message); // 输出成功的消息
@@ -116,8 +128,9 @@ const Index: FC<Pros> = ({ searchText }) => {
   };
 
   const handleProductsDelete = () => {
-    console.log(rowSelectionModel);
     const selectedIds = rowSelectionModel.map((rowId) => rowId);
+    if(selectedIds.length===0)
+      return;
     axios.post('/api/product/delete', { ids: selectedIds })
       .then(response => {
         console.log(response.data.message); // 输出删除成功的消息
@@ -158,53 +171,57 @@ const Index: FC<Pros> = ({ searchText }) => {
     console.log('index', isProductsChanged);
     if (isProductsChanged) {
       sessionStorage.removeItem('productData');
+      sessionStorage.removeItem('categoryData')
       fetchData().then();
       setIsProductsChanged(false);
       console.log();
     }
   }, [isProductsChanged, setIsProductsChanged]);
 
+  const deleteCategory=async (categoryItem: string) => {
+    console.log('delete', categoryItem);
+    axios.post('/api/product/category/delete', { category: categoryItem }).then((response)=>{
+      console.log(response.data);
+      setIsProductsChanged(true);
+    })
 
-
-  const getRowHeight = (): number =>
-    80 // 设置行的高度为 120
-  ;
+  }
 
 
   return (
-    <div className='w-full  flex-grow flex flex-col  px-8 py-4 border'>
+    <div className='w-full  flex-grow flex flex-col  px-8 py-4 '>
       <div className='flex  items-center  '>
 
         <div className='flex-grow text-center'>
-          <button className='bg-blue-500 text-white py-2 px-20 rounded-md' type='button'
+          <button className='bg-red-800 text-white py-2 px-20 rounded-md' type='button'
                   onClick={handleOpenAddProductDialog}>添加商品
           </button>
           {addProductDialog && <AddProductDialog open={addProductDialog} handleClose={handleCloseAddProductDialog}
-                                                 isProductAdd={handleIsProductAdd} />}
+                                                 isProductAdd={handleIsProductAdd}  categoryArr={categoryArr} />}
         </div>
       </div>
       <div className='mt-5 bg-white w-full flex flex-col flex-grow py-4  space-y-4'>
         <div className='flex flex-row justify-between '>
           <div className='relative group   '>
-            <Menu items={categoryArr.map((item) => ({ text: item, fc: () => setCategory(item) }))} />
+            <Menu  choose={(categoryItem:string) => setCategory(categoryItem)} items={categoryArr} delete={deleteCategory} />
           </div>
           <div className='flex flex-row rounded-md'>
-            <button className={state === '全部商品' ? 'bg-blue-500 w-40 text-white rounded-md' : 'bg-gray-200 w-40'}
+            <button className={state === '全部商品' ? 'bg-red-800 w-40 text-white rounded-md' : 'bg-gray-200 w-40'}
                     type='button'
                     onClick={() => handleStateChange('全部商品')}>全部商品
             </button>
-            <button className={state === '未上架' ? 'bg-blue-500 w-40 text-white rounded-md' : 'bg-gray-200 w-40'}
+            <button className={state === '未上架' ? 'bg-red-800 w-40 text-white rounded-md' : 'bg-gray-200 w-40'}
                     type='button'
                     onClick={() => handleStateChange('未上架')}>未上架
             </button>
-            <button className={state === '已上架' ? 'bg-blue-500 w-40 text-white rounded-md' : 'bg-gray-200 w-40'}
+            <button className={state === '已上架' ? 'bg-red-800 w-40 text-white rounded-md' : 'bg-gray-200 w-40'}
                     type='button'
                     onClick={() => handleStateChange('已上架')}>已上架
             </button>
 
           </div>
         </div>
-        <div className='  flex-grow text-center h-96 overflow-auto  '>
+        <div className='  flex-grow text-center  overflow-auto  '>
           <DataGrid
             rows={row}
             columns={columns}
@@ -214,7 +231,7 @@ const Index: FC<Pros> = ({ searchText }) => {
                 paginationModel: { page: 0, pageSize: 10 },
               },
             }}
-            getRowHeight={getRowHeight} // 设置行高度的函数
+            getRowHeight={()=>80} // 设置行高度的函数
             pageSizeOptions={[5, 10]}
             checkboxSelection
             onRowSelectionModelChange={(newRowSelectionModel) => {
@@ -231,14 +248,17 @@ const Index: FC<Pros> = ({ searchText }) => {
             <div className='h-full flex items-center justify-center space-x-2'>
               <button className='w-20 h-6 rounded-lg bg-red-500 text-white text-xs tracking-widest'
                       type='button'
+                      disabled={rowSelectionModel.length===0}
                       onClick={handleProductsDelete}>删除
               </button>
               <button className='w-20 h-6 rounded-lg bg-green-500 text-white text-xs tracking-widest'
                       type='button'
+                      disabled={rowSelectionModel.length===0}
                       onClick={handleOnSelLClick}>上架
               </button>
               <button className='w-20 h-6 rounded-lg bg-blue-500 text-white text-xs tracking-widest'
                       type='button'
+                      disabled={rowSelectionModel.length===0}
                       onClick={handleOffSellClick}>下架
               </button>
             </div>

@@ -7,17 +7,7 @@ import ImageDialog from '../Dialog/imageDialog';
 import useStore from '../../date/store';
 
 const ImageCell = (params: GridRenderCellParams<any, any, any>) => {
-  const [isHovered, setIsHovered] = useState(false);
   const [previewImage, setPreviewImage] = useState(false);
-
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
 
   const handleOpen = () => {
     console.log(params.value);
@@ -30,13 +20,8 @@ const ImageCell = (params: GridRenderCellParams<any, any, any>) => {
 
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
-    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleOpen}>
+    <div className="relative" onClick={handleOpen}>
       <Image src={params.value[0].image} alt='商品图片' width={40} height={40} />
-      {isHovered && (
-        <div className="fixed top-20 left-80 ">
-          <Image src={params.value[0].image} alt='放大的图片' width={400} height={400} />
-        </div>
-      )}
       {previewImage && <ImageDialog open={previewImage} images={params.value} handleClose={handleClose} />}
     </div>
   );
@@ -88,7 +73,7 @@ const OperatorCell = (params: GridRenderCellParams<any, any, any>) => {
       <span className='sm:ml-3'>
       <button type='button'
               onClick={handleProductDelete}
-              className='inline-flex items-center rounded-md bg-indigo-500 px-2 py-1 text-sm font-semibold text-white shadow-sm '>
+              className='inline-flex items-center rounded-md bg-red-800 px-2 py-1 text-sm font-semibold text-white shadow-sm '>
 
         删除
         </button>

@@ -3,9 +3,7 @@ import axios from 'axios';
 import Layout from '../layout';
 import Right from '../components/product';
 
-const Home: NextPage = () => (
-    <Layout right={Right} currentPage="商品" />
-  );
+const Home: NextPage = () => (<Layout right={Right} currentPage="商品" />);
 
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   // 在这里进行登录验证的逻辑判断

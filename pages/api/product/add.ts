@@ -67,12 +67,12 @@
         const amount = parseInt(fields.amount);
         const { detail, title, category, status } = fields;
         const eachDetail:EachDetail[]=JSON.parse(fields.eachDetail);
-        console.log(eachDetail);
-
+        // console.log(eachDetail);
 
         const uploadedFiles = Object.values(files) as formidable.File[];
 
         if (uploadedFiles.length === 0) {
+          console.log('no files upload');
           return res.status(400).json({ error: 'No files uploaded' });
         }
         console.log(uploadedFiles.length);
@@ -116,8 +116,6 @@
                 newProduct.amount, newProduct.status,
                 newProduct.detail, JSON.stringify(newProduct.eachDetail),]
             )
-
-
           });
           res.status(200).json({ message: 'add product successfully' });
 

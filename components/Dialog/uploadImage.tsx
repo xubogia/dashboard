@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Image from 'next/image';
 import MenuItem from '@mui/material/MenuItem';
@@ -29,9 +29,10 @@ interface NewProduct {
 interface Props {
   value: NewProduct;
   onChange: (prop: string, images: any[]) => void;
+  validationError:object;
 }
 
-const ImageUploader: FC<Props> = ({ value, onChange }) => {
+const ImageUploader: FC<Props> = ({ value, onChange,validationError }) => {
   const [imageItems, setImageItems] = useState<EachDetail[]>(value.eachDetail);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewImage, setPreviewImage] = useState(false);
@@ -39,11 +40,16 @@ const ImageUploader: FC<Props> = ({ value, onChange }) => {
   const handleClose = () => {
     setPreviewImage(false);
   };
+
+  useEffect(()=>{
+    console.log(validationError["eachDetail[0].imageDetail"]);
+  },[validationError])
+
   const handleImageUpload = (event: any) => {
     const { files } = event.target;
-    console.log('files', files);
+    // console.log('files', files);
     const uploadedImageFiles = [...imageFiles, ...files];
-    console.log('uploadedImageFiles', uploadedImageFiles);
+    // console.log('uploadedImageFiles', uploadedImageFiles);
     setImageFiles(uploadedImageFiles);
     onChange('newImage', uploadedImageFiles);
     const uploadedImages = [...imageItems];
@@ -53,6 +59,9 @@ const ImageUploader: FC<Props> = ({ value, onChange }) => {
       reader.onloadend = () => {
         count++;
         const newImageItem: EachDetail = { image: '', imageDetail: '', size: [] };
+        const imageItemsTemp = [...imageItems,newImageItem];
+        onChange('eachDetail',imageItemsTemp);
+        // onChange('eachDetail', sizeTemp);
         if (typeof reader.result === 'string') {
           newImageItem.image = reader.result;
           uploadedImages.push(newImageItem);
@@ -99,7 +108,7 @@ const ImageUploader: FC<Props> = ({ value, onChange }) => {
         {
           imageItems.length !== 0 &&
           imageItems.map((item: EachDetail, index) => (
-            <div className='w-full flex flex-row mb-4 space-x-6   max-h-40 '>
+            <div className='border  p-4 flex flex-row mb-4 space-x-6   max-h-40 '>
               <div className='flex flex-row  space-x-2  '>
                 <Image src={item.image} alt='Uploaded' width={100} height={100} onClick={() =>{
                   setImageToLarger(item.image)
@@ -117,13 +126,15 @@ const ImageUploader: FC<Props> = ({ value, onChange }) => {
                 </div>
               </div>
 
-              <div className='flex flex-col space-y-2 relative '>
+              <div className='flex flex-col space-y-2 relative text-xs'>
                 <TextField
                   margin='dense'
                   id='color'
                   label='颜色'
                   type='text'
                   name='color'
+                  error={Boolean(validationError[`eachDetail[${index}].imageDetail`])}
+                  required
                   value={
                     item.imageDetail ||
                     ''}
@@ -137,11 +148,13 @@ const ImageUploader: FC<Props> = ({ value, onChange }) => {
                 />
 
                 <FormControl fullWidth margin='dense'>
-                <InputLabel htmlFor='size'>状态</InputLabel>
+                <InputLabel htmlFor='size'>尺寸</InputLabel>
                 <Select
                   label='尺寸'
                   id='size'
                   name='size'
+                  error={Boolean(validationError[`eachDetail[${index}].size`])}
+                  required
                   value={item.size}
                   multiple
                   onChange={(event) =>{

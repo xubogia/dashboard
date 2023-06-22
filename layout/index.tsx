@@ -11,9 +11,12 @@ interface Props {
 
 const Index: FC<Props> = ({right,currentPage}) => (
 
-    <div className="flex flex-row h-screen">
-      <Nav currentPage={currentPage}/>
-      <Main Right={right}/>
+    <div className="h-full  sm:p-8  bg-gray-100">
+      <div className='w-full h-full flex flex-row  border rounded-lg bg-white '>
+        <Nav currentPage={currentPage}/>
+        <Main Right={right}/>
+      </div>
+
     </div>
   );
 

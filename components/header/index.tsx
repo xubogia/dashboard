@@ -7,8 +7,8 @@ interface Props {
   setSearchText: (text: string) => void;
 }
 const Index: FC<Props> =({setSearchText})=>(
-    <div className='w-full items-center flex flex-row space-x-8 justify-between px-10  py-2 shadow'>
-      <div className="w-96">
+    <div className='w-full items-center  px-10  py-2 shadow '>
+      <div className=''>
         <TextField
           onChange={(event)=>setSearchText(event.target.value)}
           placeholder="搜索"
