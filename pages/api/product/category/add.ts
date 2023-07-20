@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import mysql from 'mysql2';
 
-
-
 const dbConnection = mysql.createPool({
   connectionLimit: 10,
   host: 'localhost',
@@ -13,8 +11,8 @@ const dbConnection = mysql.createPool({
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('posting new category');
-  if(req.method==='POST'){
-    const {newCategory} = req.body;
+  if (req.method === 'POST') {
+    const { newCategory } = req.body;
     console.log(newCategory);
     dbConnection.getConnection((err, connection) => {
       if (err) {
@@ -23,14 +21,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       }
 
       // 查询数据库中的产品数据
-      connection.query('INSERT INTO category (categoryName) VALUE (?)', (newCategory),
-        (err, result)=>{})
+      connection.query('INSERT INTO category (categoryName) VALUE (?)', newCategory);
     });
 
     res.status(200).json({ message: 'add newCategory successfully' });
-  }else{
+  } else {
     res.status(405).json({ error: 'Method not allowed' });
   }
-
-
 }
